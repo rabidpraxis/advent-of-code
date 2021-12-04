@@ -25,23 +25,23 @@
 (defn boards [lines]
   (->> lines
        (partition 5 6)
-       (map (comp build-board split-board))))
+       (map split-board)
+       (map build-board)))
 
 (defn winning-board? [board]
-  (or (->> (partition 5 (sort-by first (vals board)))
-           (map #(map last %))
-           (map #(every? true? %))
-           (some true?))
-      (->> (partition 5 (sort-by second (vals board)))
-           (map #(map last %))
-           (map #(every? true? %))
-           (some true?))))
+  (letfn [(all-matched-by [sort-fn]
+            (->> (vals board)
+                 (sort-by sort-fn)
+                 (partition 5)
+                 (map #(map last %))
+                 (map #(every? true? %))
+                 (some true?)))]
+    (or (all-matched-by first)
+        (all-matched-by second))))
 
 (defn apply-score [board score]
   (if (contains? board score)
-    (update board score
-      (fn [[x y _]]
-        [x y true]))
+    (assoc-in board [score 2] true)
     board))
 
 (defn find-first-winner [scores boards]
