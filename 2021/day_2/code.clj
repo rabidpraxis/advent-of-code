@@ -1,9 +1,10 @@
-(require
-  '[clojure.string :as str])
+(ns day-2.code
+  (:require
+    [clojure.string :as str]))
 
 (def final-data
   (->>
-    (slurp "input.txt")
+    (slurp "day_2/input.txt")
     (str/split-lines)))
 
 (def t-input

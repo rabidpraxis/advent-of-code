@@ -1,9 +1,10 @@
-(require
-  '[clojure.string :as str])
+(ns day-3.code
+  (:require
+    [clojure.string :as str]))
 
 (def final-data
   (->>
-    (slurp "input.txt")
+    (slurp "day_3/input.txt")
     (str/split-lines)))
 
 (def test-input
@@ -45,8 +46,9 @@
 (defn binary-to-int [string]
   (Integer/parseInt string 2))
 
-(* (binary-to-int (epsilon final-data))
-   (binary-to-int (gamma final-data)))
+(defn part-1 []
+  (* (binary-to-int (epsilon final-data))
+     (binary-to-int (gamma final-data))))
 
 (defn most-common [freq]
   (if (apply = (vals freq))
@@ -60,18 +62,18 @@
 
 (defn bit-criteria [input bit-fn]
   (-> (reduce
-        (fn [{:keys [inputs]} idx]
+        (fn [inputs idx]
           (if (= (count inputs) 1)
-            {:inputs inputs}
+            inputs
             (let [match (bit-fn (freq-col inputs idx))
                   matches (filter
                             #(= (nth % idx) match)
                             inputs)]
-              {:inputs matches})))
-        {:inputs input}
+              matches)))
+        input
         (range (count (first input))))
-      :inputs
       first))
 
-(* (binary-to-int (bit-criteria final-data least-common))
-   (binary-to-int (bit-criteria final-data most-common)))
+(defn part-2 []
+  (* (binary-to-int (bit-criteria final-data least-common))
+     (binary-to-int (bit-criteria final-data most-common))))

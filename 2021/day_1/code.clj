@@ -1,12 +1,13 @@
-(require
-  '[clojure.string :as str])
+(ns day-1.code
+  (:require
+    [clojure.string :as str]))
 
 (def test-nums
   [199 200 208 210 200 207 240 269 260 263])
 
 (def part-1-data
   (->>
-    (slurp "input.txt")
+    (slurp "day_1/input.txt")
     (str/split-lines)
     (map read-string)))
 
