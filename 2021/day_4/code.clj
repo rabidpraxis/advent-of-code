@@ -2,33 +2,8 @@
   (:require
     [clojure.string :as str]))
 
-(def final-data
-  (str/split-lines (slurp "day_4/input.txt")))
-
-(def test-board-data
-  "22 13 17 11  0
- 8  2 23  4 24
-21  9 14 16  7
- 6 10  3 18  5
- 1 12 20 15 19
-
- 3 15  0  2 22
- 9 18 13 17  5
-19  8  7 25 23
-20 11 10 24  4
-14 21 16 12  6
-
-14 21 17 24  4
-10 16 15  9 19
-18  8 23 26 20
-22 11 13  6  5
- 2  0 12  3  7")
-
 (defn parse-scores [scores]
   (map #(Integer/parseInt %) (str/split scores #",")))
-
-(defn split-board [lines]
-  (map #(-> % (str/trim) (str/split #"\s+")) lines))
 
 (defn index [item]
   (map vector (range (count item)) item))
@@ -43,6 +18,9 @@
         (index row)))
     {}
     (index board)))
+
+(defn split-board [lines]
+  (map #(-> % (str/trim) (str/split #"\s+")) lines))
 
 (defn boards [lines]
   (->> lines
@@ -66,12 +44,6 @@
         [x y true]))
     board))
 
-(def test-scores
-  (parse-scores "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1"))
-
-(def test-boards
-  (boards (str/split-lines test-board-data)))
-
 (defn find-first-winner [scores boards]
   (let [score (first scores)
         updated-boards (map #(apply-score % score) boards)]
@@ -79,10 +51,20 @@
       [score winner]
       (recur (rest scores) updated-boards))))
 
+(defn find-last-winner [scores boards losers]
+  (let [score (first scores)
+        updated-boards (map #(apply-score % score) boards)]
+    (if (every? winning-board? updated-boards)
+      [score (apply-score (last losers) score)]
+      (recur (rest scores) updated-boards (remove winning-board? updated-boards)))))
+
 (defn unmarked-score [score board]
   (let [unmarked (filter (comp false? last last) (seq board))
         unmarked-tot (reduce #(+ %1 (first %2)) 0 unmarked)]
     (* score unmarked-tot)))
+
+(def final-data
+  (str/split-lines (slurp "day_4/input.txt")))
 
 (def final-scores
   (parse-scores (first final-data)))
@@ -93,16 +75,18 @@
 (def part-1
   (apply unmarked-score (find-first-winner final-scores final-boards)))
 
-(defn find-last-winner [scores boards losers]
-  (let [score (first scores)
-        updated-boards (map #(apply-score % score) boards)]
-    (if (every? winning-board? updated-boards)
-      [score (apply-score (last losers) score)]
-      (recur (rest scores) updated-boards (remove winning-board? updated-boards)))))
-
 (def part-2
   (apply unmarked-score (find-last-winner final-scores final-boards nil)))
 
 (comment
+  (def test-data
+    (str/split-lines (slurp "day_4/test.txt")))
+
+  (def test-scores
+    (parse-scores (first test-data)))
+
+  (def test-boards
+    (boards (nthrest test-data 2)))
+
   (apply unmarked-score (find-first-winner test-scores test-boards))
   (apply unmarked-score (find-last-winner test-scores test-boards nil)))
