@@ -1,10 +1,14 @@
 {
  :paths ["."]
+ :deps
+ {hyperfiddle/rcf {:git/url "https://github.com/hyperfiddle/rcf.git" :git/sha "c399b1b621b19dc576ea46cd4b254477e1ca9756"}}
+
  :aliases
  {:nrepl
-  {:extra-deps {cider/cider-nrepl {:mvn/version "0.26.0"}
-                nrepl/nrepl {:mvn/version "0.8.3"}
+  {:extra-deps {cider/cider-nrepl {:mvn/version "0.27.2"}
+                nrepl/nrepl {:mvn/version "0.9.0-beta5"}
                 org.clojure/tools.namespace {:mvn/version "1.1.0"}}
    :main-opts ["-m" "nrepl.cmdline" "--interactive" "--middleware" "[cider.nrepl/cider-middleware]"]}
   }
  }
+
