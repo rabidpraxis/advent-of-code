@@ -10,32 +10,29 @@
   (read-input (slurp "day_6/input.txt")))
 
 (defn brute-progress [fish]
-  (mapcat
-    #(cond
-       (zero? %)
-         [6 8]
-       :else
-         [(dec %)])
-    fish))
+  (mapcat #(if (zero? %)
+             [6 8]
+             [(dec %)])
+          fish))
 
-(defn do-progress [progress-fn fish days]
-  (reduce (fn [v _]
-            (progress-fn v))
-          fish
-          (range days)))
+(defn repeat-fn
+  "reduce over value (d) by specific count (ct) with function (f)"
+  [f ct d]
+  (reduce (fn [v _] (f v)) d (range ct)))
 
-(defn progress-indexed
-  "Progress with indexed fish. Keep counts of fish per day, instead
-  of a flat list.
+(defn indexed-progress
+  "Find progress by indexing fish counts per day, vs
+  building up a flat list. For example, counts for each
+  9 days would make an indexed list like:
 
   [1 2 3 0 0 0 1 3 0]
 
-  becomes
+  which after another day becomes:
 
   days:
    0           6   8
    |           |   |
-  [2 3 0 0 0 2 3 0 2]"
+  [2 3 0 0 0 1 4 0 1]"
   [fish]
   (let [today (first fish)
         field (vec (rest fish))]
@@ -51,7 +48,11 @@
     (range 9)))
 
 (def part-1
-  (count (do-progress brute-progress final-data 80)))
+  (count (repeat-fn brute-progress 80 final-data)))
 
 (def part-2
-  (reduce + (do-progress progress-indexed (index-fish (frequencies final-data)) 256)))
+  (->>
+    (frequencies final-data)
+    index-fish
+    (repeat-fn indexed-progress 256)
+    (reduce +)))
