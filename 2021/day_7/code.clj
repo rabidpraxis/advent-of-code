@@ -9,29 +9,25 @@
 (def final-data
   (read-input (slurp "day_7/input.txt")))
 
-(defn part-1 [data]
-  (apply min (map
-    (fn [i]
-      (reduce
-        (fn [coll v]
-          (+ coll (Math/abs (- i v))))
-        0
-        data))
-    (set data))))
+(defn effecient-fuel-used
+  ([data]
+   (effecient-fuel-used data identity))
+  ([data multfn]
+   (->> (range (apply max data))
+        (map
+          (fn [i]
+            (reduce
+              (fn [coll v]
+                (+ coll (multfn (Math/abs (- i v)))))
+              0
+              data)))
+        (apply min))))
 
-(part-1 final-data)
+(def part-1
+  (effecient-fuel-used final-data))
 
 (def fuel
   (mapv (fn [i] (apply + (range 1 i))) (range 1 2000)))
 
-(defn part-2 [data]
-  (apply min (map
-    (fn [i]
-      (reduce
-        (fn [coll v]
-          (+ coll (nth fuel (Math/abs (- i v)))))
-        0
-        data))
-    (range (apply max data)))))
-
-(part-2 final-data)
+(def part-2
+  (effecient-fuel-used final-data #(nth fuel %)))
