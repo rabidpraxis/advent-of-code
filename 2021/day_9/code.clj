@@ -48,7 +48,11 @@
     (range (:y board))))
 
 (def part-1
-  (apply + (map inc (map first (find-lows (build-board final-data))))))
+  (->> (build-board final-data)
+       find-lows
+       (map first)
+       (map inc)
+       (apply +)))
 
 (defn basin-size [board ix iy]
   (-> (loop [visited #{}

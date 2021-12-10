@@ -41,21 +41,15 @@
   {")" 1 "]" 2 "}" 3 ">" 4})
 
 (def part-2
-  (->>
-    (map find-illegal final-data)
-    (map :incomplete)
-    (remove nil?)
-    (map #(map (fn [e] (get char-map e)) %))
-    (map
-      (fn [line]
-        (reduce
-          (fn [curr letter]
-            (+ (* curr 5) (get char-score2 letter)))
-          0
-          line)
-        )
-      )
-    sort
-    ((fn [v]
-       (nth v (/ (count v) 2))
-       ))))
+  (->> (map find-illegal final-data)
+       (map :incomplete)
+       (remove nil?)
+       (map #(map (fn [e] (get char-map e)) %))
+       (map (fn [line]
+              (reduce
+                (fn [curr letter]
+                  (+ (* curr 5) (get char-score2 letter)))
+                0
+                line)))
+       sort
+       (#(nth % (/ (count %) 2)))))
