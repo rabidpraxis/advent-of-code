@@ -22,7 +22,7 @@
     (if-let [char (first line)]
       (if (contains? open-chars char)
         (recur (cons char curr) (rest line))
-        (if (= char (get char-map (first curr)))
+        (if (= char (char-map (first curr)))
           (recur (rest curr) (rest line))
           {:corrupt char}))
       {:incomplete curr})))
@@ -34,7 +34,7 @@
   (->> (map find-illegal final-data)
        (map :corrupt)
        (remove nil?)
-       (map #(get char-score %))
+       (map char-score)
        (apply +)))
 
 (def char-score2
@@ -44,11 +44,11 @@
   (->> (map find-illegal final-data)
        (map :incomplete)
        (remove nil?)
-       (map #(map (fn [e] (get char-map e)) %))
+       (map #(map char-map %))
        (map (fn [line]
               (reduce
                 (fn [curr letter]
-                  (+ (* curr 5) (get char-score2 letter)))
+                  (+ (* curr 5) (char-score2 letter)))
                 0
                 line)))
        sort
