@@ -19,33 +19,33 @@
 (defn lookup [board x y]
   (get-in board [:board y x]))
 
-(defn valid-coord [board x y]
+(defn valid-coord
+  "filter out overflow coordinates"
+  [board x y]
   (and (>= x 0)
        (>= y 0)
        (< x (:x board))
        (< y (:y board))))
 
 (defn neighbors
-  "includes diags"
+  "find valid neighboring coords (including diags)"
   [board x y]
-  (filter
-    #(apply valid-coord board %)
-    [[(dec x)      y ]
-     [(inc x)      y ]
-     [x       (inc y)]
-     [x       (dec y)]
-     [(dec x) (dec y)]
-     [(inc x) (inc y)]
-     [(dec x) (inc y)]
-     [(inc x) (dec y)]]))
+  (for [nx (range (- x 1) (+ x 2))
+        ny (range (- y 1) (+ y 2))
+        :when (and (not= [nx ny] [x y])
+                   (valid-coord board nx ny))]
+    [nx ny]))
 
 (defn inc-board [board]
   (update board :board
     (fn [b]
       (mapv #(mapv inc %) b))))
 
-(defn inc-pos [board x y]
-  (let [v (get-in board [:board y x])
+(defn inc-pos
+  "increment a specific position and return updated board with
+  incremented value"
+  [board x y]
+  (let [v (lookup board x y)
         nv (inc v)]
     [(assoc-in board [:board y x] nv) nv]))
 
@@ -57,6 +57,8 @@
     [x y]))
 
 (defn step-flashes
+  "increment all items and return a new board and all neighbors
+  of currently flashing numbers"
   [board]
   (let [step-board (inc-board board)
         flashes (find-flashes step-board)]
@@ -65,10 +67,12 @@
                   flashes)]))
 
 (defn process-flashes
+  "given a set of coordinates to increment, bump and check for
+  new flashes. If there are new flashes from the resulting bump,
+  then add to the list of flashes and keep incrementing."
   [board flashes]
-  (loop
-    [flashes flashes
-     board board]
+  (loop [flashes flashes
+         board board]
     (if-let [[x y] (first flashes)]
       (let [[board nv] (inc-pos board x y)
             nflashes (if (= 10 nv)
@@ -81,6 +85,8 @@
   (assoc-in board [:board y x] 0))
 
 (defn zero-flashes
+  "zero out any previously flashing items and update the
+  flash counts"
   [board]
   (let [flashes (find-flashes board)]
     (-> (reduce #(apply zero-board-pos %1 %2) board flashes)
