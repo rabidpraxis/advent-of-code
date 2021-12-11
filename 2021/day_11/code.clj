@@ -36,10 +36,9 @@
                    (valid-coord board nx ny))]
     [nx ny]))
 
-(defn inc-board [board]
-  (update board :board
-    (fn [b]
-      (mapv #(mapv inc %) b))))
+(defn inc-board
+  [board]
+  (update board :board (partial mapv #(mapv inc %))))
 
 (defn inc-pos
   "increment a specific position and return updated board with
