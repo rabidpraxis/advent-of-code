@@ -72,17 +72,12 @@
         graph (build-graph board)]
     (route graph (partial dist board) [0 0] [(dec x) (dec y)])))
 
-(def part-1
-  (let [board (build-board final-data)]
-    (apply + (map #(apply lookup board %)
-                  (optimal-path board)))))
-
-(defn build-big-board [lines]
+(defn expanded-board [lines m]
   (let [grid (mapv #(mapv read-string (str/split % #"")) lines)
         x (count grid)
         y (count (first grid))
-        xl (* 5 x)
-        yl (* 5 y)
+        xl (* m x)
+        yl (* m y)
         final-grid (for [nx (range xl)]
                      (for [ny (range yl)]
                        (let [mx (mod nx x)
@@ -96,20 +91,17 @@
                            val))))]
     {:grid (into [] (map #(into [] %) final-grid)) :y xl :x yl}))
 
+(defn sum-path [board]
+  (->> board
+       optimal-path
+       (map #(apply lookup board %))
+       (apply +)))
+
+(def part-1
+  (sum-path (build-board final-data)))
 
 (def part-2
-  (let [board (build-big-board final-data)]
-    (->> board
-         optimal-path
-         (map #(apply lookup board %))
-         (apply +))))
+  (sum-path (expanded-board final-data 5)))
 
 (comment
-  (map #(apply str %)
-       (:grid (build-big-board final-data)))
-  (lookup (build-big-board test-data) 47 49)
-
-  (for [n (range 50)]
-    (=
-      (nth (map #(apply str %) (:grid (build-big-board test-data))) n)
-      (nth (str/split-lines (slurp "day_15/part_2_check.txt")) n))))
+  (map #(apply str %) (:grid (expanded-board test-data 5))))
