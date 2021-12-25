@@ -58,12 +58,6 @@
       (*find coll [])
       :found))
 
-(find-explosion
-  (->> (gather-node-pos [[[[[1 2] 2 [3 4]]]]])
-       (partition 2 1)
-       (filter (fn [[_ v]] (= v [0 0 0 1])))
-       ffirst))
-
 (defn find-split
   [coll]
   (-> (fn [v _] (and (int? v) (> v 9)))
