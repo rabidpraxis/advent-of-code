@@ -30,39 +30,37 @@
      (map-indexed list v))))
 
 (defn *find
-  [check-fn coll path]
-  (reduce
-    (fn [path [idx v]]
-      (if (:found path)
-        path
-        (let [npath (conj path idx)]
-          (cond
-            (check-fn v npath)
-              {:found npath}
-            (vector? v)
-              (let [ret (*find check-fn v npath)]
-                (if (:found ret)
-                  ret
-                  (pop ret)))
-            :else
-              path))))
-    path
-    (map-indexed list coll)))
+  ([coll check-fn]
+   (:found (*find check-fn coll [])))
+  ([check-fn coll path]
+   (reduce
+     (fn [path [idx v]]
+       (if (:found path)
+         path
+         (let [npath (conj path idx)]
+           (cond
+             (check-fn v npath)
+               {:found npath}
+             (vector? v)
+               (let [ret (*find check-fn v npath)]
+                 (if (:found ret)
+                   ret
+                   (pop ret)))
+             :else
+               path))))
+     path
+     (map-indexed list coll))))
 
 (defn find-explosion
   [coll]
-  (-> (fn [v p] (and (vector? v)
-                     (int? (first v))
-                     (int? (second v))
-                     (>= (count p) 4)))
-      (*find coll [])
-      :found))
+  (*find coll (fn [v p] (and (vector? v)
+                             (int? (first v))
+                             (int? (second v))
+                             (>= (count p) 4)))))
 
 (defn find-split
   [coll]
-  (-> (fn [v _] (and (int? v) (> v 9)))
-      (*find coll [])
-      :found))
+  (*find coll (fn [v _] (and (int? v) (> v 9)))))
 
 (defn explode [p]
   (if-let [u (find-explosion p)]
