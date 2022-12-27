@@ -4,39 +4,16 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/rabidpraxis/advent-of-code/utils"
 )
 
 func letterCode(letter string) int {
 	return strings.Index("0abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", letter)
 }
 
-type Set struct {
-	set map[string]bool
-}
-
-func NewSet() *Set {
-	return &Set{make(map[string]bool)}
-}
-
-func (set *Set) Add(s string) {
-	set.set[s] = true
-}
-
-func (set *Set) Has(s string) bool {
-	_, found := set.set[s]
-	return found
-}
-
-func (set *Set) ToSlice() []string {
-	var o []string
-	for k, _ := range set.set {
-		o = append(o, k)
-	}
-	return o
-}
-
 func findShared(t string) string {
-	letterSet := NewSet()
+	letterSet := utils.NewSet[string]()
 	mid := len(t) / 2
 
 	for idx, r := range t {
@@ -101,7 +78,7 @@ func part2(lines []string) {
 	occurrenceSet := NewOccurrenceSet()
 	sum := 0
 	for idx, line := range lines {
-		lineSet := NewSet()
+		lineSet := utils.NewSet[string]()
 
 		for _, r := range line {
 			lineSet.Add(string(r))
@@ -118,14 +95,8 @@ func part2(lines []string) {
 	fmt.Println(sum)
 }
 
-func fileLines(fName string) []string {
-	data, _ := os.ReadFile(fName)
-	split := strings.Split(string(data), "\n")
-	return split[:len(split)-1]
-}
-
 func main() {
-	lines := fileLines(os.Args[1])
+	lines := utils.FileLines(os.Args[1])
 
 	part1(lines)
 	part2(lines)

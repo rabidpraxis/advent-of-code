@@ -1,17 +1,13 @@
 package main
 
 import (
-	"os"
-	"strings"
-	"strconv"
 	"fmt"
-)
+	"os"
+	"strconv"
+	"strings"
 
-func fileLines(fName string) []string {
-	data, _ := os.ReadFile(fName)
-	split := strings.Split(string(data), "\n")
-	return split[:len(split)-1]
-}
+	"github.com/rabidpraxis/advent-of-code/utils"
+)
 
 type Coords struct {
 	x1 int
@@ -30,12 +26,12 @@ func extract(s string) *Coords {
 	x2, _ := strconv.Atoi(g2[0])
 	y2, _ := strconv.Atoi(g2[1])
 
-	return &Coords{ x1, y1, x2, y2 }
+	return &Coords{x1, y1, x2, y2}
 }
 
 func covered(coords *Coords) bool {
 	if (coords.x1 <= coords.x2 && coords.y1 >= coords.y2) ||
-		 (coords.x2 <= coords.x1 && coords.y2 >= coords.y1) {
+		(coords.x2 <= coords.x1 && coords.y2 >= coords.y1) {
 		return true
 	}
 	return false
@@ -54,10 +50,10 @@ func part1(lines []string) {
 
 func overlaps(c *Coords) bool {
 	if ((c.x1 >= c.x2) && (c.x1 <= c.y2)) ||
-		 ((c.y1 >= c.x2) && (c.y1 <= c.y2)) ||
-		 ((c.x1 >= c.x2) && (c.y1 <= c.y2)) ||
-		 ((c.x2 >= c.x1) && (c.y2 <= c.y1)) {
-	  return true
+		((c.y1 >= c.x2) && (c.y1 <= c.y2)) ||
+		((c.x1 >= c.x2) && (c.y1 <= c.y2)) ||
+		((c.x2 >= c.x1) && (c.y2 <= c.y1)) {
+		return true
 	}
 	return false
 }
@@ -74,7 +70,7 @@ func part2(lines []string) {
 }
 
 func main() {
-	lines := fileLines(os.Args[1])
+	lines := utils.FileLines(os.Args[1])
 
 	part1(lines)
 	part2(lines)
