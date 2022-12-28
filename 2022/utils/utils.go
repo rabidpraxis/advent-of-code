@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"strings"
-	"fmt"
 
 	"golang.org/x/exp/constraints"
 )
@@ -23,6 +23,20 @@ func Abs[T Number](x T) T {
 		return -x
 	}
 	return x
+}
+
+func Max[T Number](a, b T) T {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func Min[T Number](a, b T) T {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func MakeGrid(width int, height int) [][]string {
