@@ -19,10 +19,14 @@ func TestNeat(t *testing.T) {
 		return false
 	})
 
-	h.Push(person{"kevin", 2})
-	h.Push(person{"webster", 1})
+	h.Push(person{"kevin", 3})
+	h.Push(person{"webster", 2})
+	h.Push(person{"kewl", 1})
 	h.Push(person{"winner", 100})
 
 	assert.Equal(t, "winner", h.Pop().name)
 	assert.Equal(t, "kevin", h.Pop().name)
+
+	h.Remove(person{"webster", 2})
+	assert.Equal(t, h.Len(), 1)
 }

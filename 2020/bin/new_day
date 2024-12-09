@@ -1,0 +1,21 @@
+#!/bin/bash
+
+mkdir "day_$1"
+touch "day_$1/test.txt"
+
+tee "day_$1/code.go" <<EOF
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/rabidpraxis/advent-of-code/utils"
+)
+
+func main() {
+	input := utils.FileLines(os.Args[1])
+
+  fmt.Println(input)
+}
+EOF

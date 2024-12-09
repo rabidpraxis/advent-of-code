@@ -47,6 +47,8 @@ type Pather interface {
 	// PathEstimatedCost is a heuristic method for estimating movement costs
 	// between non-adjacent nodes.
 	PathEstimatedCost(to Pather) float64
+
+	PathComplete(to Pather) bool
 }
 
 // node is a wrapper to store A* data for a Pather node.
@@ -82,19 +84,22 @@ func Path(from, to Pather) (path []Pather, distance float64, found bool) {
 	nm := nodeMap{}
 	nq := &priorityQueue{}
 	heap.Init(nq)
+
 	fromNode := nm.get(from)
 	fromNode.open = true
 	heap.Push(nq, fromNode)
+
 	for {
 		if nq.Len() == 0 {
 			// There's no path, return found false.
 			return
 		}
+
 		current := heap.Pop(nq).(*node)
 		current.open = false
 		current.closed = true
 
-		if current == nm.get(to) {
+		if current.pather.PathComplete(nm.get(to).pather) {
 			// Found a path to the goal.
 			p := []Pather{}
 			curr := current

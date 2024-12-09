@@ -42,44 +42,56 @@ func part1(sensors []sensor, yCheck int) {
 }
 
 func part2(sensors []sensor, r int) {
-	edges := utils.NewSet[utils.Coord]()
+	// edges := utils.NewSet[utils.Coord]()
+	finished := make(chan bool, 1)
+
 	for _, s := range sensors {
-		for i := 0; i <= (s.distMag + 1); i++ {
-			inv := (s.distMag + 1) - i
+		fmt.Println(s)
+		go func(ch chan<- bool) {
+			edges := utils.NewSet[utils.Coord]()
+			for i := 0; i <= (s.distMag + 1); i++ {
+				inv := (s.distMag + 1) - i
 
-			plusX := s.pos.X + i
-			minX := s.pos.X - i
-			plusY := s.pos.Y + inv
-			minY := s.pos.Y - inv
+				plusX := s.pos.X + i
+				minX := s.pos.X - i
+				plusY := s.pos.Y + inv
+				minY := s.pos.Y - inv
 
-			if plusX >= 0 && plusX <= r && minY >= 0 && minY <= r {
-				edges.Add(utils.Coord{plusX, minY})
+				if plusX >= 0 && plusX <= r && minY >= 0 && minY <= r {
+					edges.Add(utils.Coord{plusX, minY})
+				}
+				if plusX >= 0 && plusX <= r && plusY >= 0 && plusY <= r {
+					edges.Add(utils.Coord{plusX, plusY})
+				}
+				if minX >= 0 && minX <= r && minY >= 0 && minY <= r {
+					edges.Add(utils.Coord{minX, minY})
+				}
+				if minX >= 0 && minX <= r && plusY >= 0 && plusY <= r {
+					edges.Add(utils.Coord{minX, plusY})
+				}
 			}
-			if plusX >= 0 && plusX <= r && plusY >= 0 && plusY <= r {
-				edges.Add(utils.Coord{plusX, plusY})
+
+			fmt.Println("here")
+
+			for _, edge := range edges.ToSlice() {
+				okay := true
+				for _, s := range sensors {
+					if s.withinDist(edge) {
+						okay = false
+						break
+					}
+				}
+
+				if okay {
+					fmt.Println((edge.X * 4000000) + edge.Y)
+					ch <- true
+					return
+				}
 			}
-			if minX >= 0 && minX <= r && minY >= 0 && minY <= r {
-				edges.Add(utils.Coord{minX, minY})
-			}
-			if minX >= 0 && minX <= r && plusY >= 0 && plusY <= r {
-				edges.Add(utils.Coord{minX, plusY})
-			}
-		}
+		}(finished)
 	}
 
-	for _, edge := range edges.ToSlice() {
-		okay := true
-		for _, s := range sensors {
-			if s.withinDist(edge) {
-				okay = false
-			}
-		}
-
-		if okay {
-			fmt.Println((edge.X * 4000000) + edge.Y)
-			return
-		}
-	}
+	<-finished
 }
 
 func main() {
@@ -108,6 +120,6 @@ func main() {
 		})
 	}
 
-	part1(sensors, 2000000)
+	// part1(sensors, 2000000)
 	part2(sensors, 4000000)
 }

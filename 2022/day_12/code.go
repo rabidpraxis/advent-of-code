@@ -77,6 +77,10 @@ func (n nnode) PathNeighbors() []utils.Pather {
 	return ps
 }
 
+func (n nnode) PathComplete(to utils.Pather) bool {
+	return n == to.(nnode)
+}
+
 func (n nnode) PathNeighborCost(to utils.Pather) float64 {
 	return 1
 }
@@ -134,6 +138,6 @@ func part2(lines []string) {
 func main() {
 	lines := utils.FileLines(os.Args[1])
 
-	// part1(lines)
+	part1(lines)
 	part2(lines)
 }

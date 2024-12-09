@@ -1,11 +1,15 @@
 package utils
 
-type Heap[T any] struct {
+import (
+	"golang.org/x/exp/slices"
+)
+
+type Heap[T comparable] struct {
 	data []T
 	comp func(a, b T) bool
 }
 
-func NewHeap[T any](comp func(a, b T) bool) *Heap[T] {
+func NewHeap[T comparable](comp func(a, b T) bool) *Heap[T] {
 	return &Heap[T]{comp: comp}
 }
 
@@ -25,6 +29,14 @@ func (h *Heap[T]) Pop() T {
 	v := h.data[n]
 	h.data = h.data[0:n]
 	return v
+}
+
+func (h *Heap[T]) Remove(item T) {
+	for idx, cItem := range h.data {
+		if cItem == item {
+			h.data = slices.Delete(h.data, idx, idx+1)
+		}
+	}
 }
 
 func (h *Heap[T]) swap(i, j int) {
